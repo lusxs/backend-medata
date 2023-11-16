@@ -45,6 +45,20 @@ const User = database.define(
         notEmpty: true,
       },
     },
+    division: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
     role: {
       type: DataTypes.STRING,
       allowNull: false,

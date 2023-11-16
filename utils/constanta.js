@@ -1,0 +1,12 @@
+export const STATUS = {
+  NOT_COMPLETED: "Not Completed",
+  COMPLETED: "Completed",
+  CANCELED: "Canceled",
+};
+
+export const DIVISION = {
+  GENERAL: "GENERAL",
+  REHABILITAS_SOSIAL: "RESOS",
+  PERLINDUNGAN_JAMINAN_SOSIAL: "LINJAMSOS",
+  PENANGANAN_SOSIAL_DAN_FAKIR_MISKIN: "PFM",
+};

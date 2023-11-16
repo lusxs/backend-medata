@@ -1,7 +1,21 @@
 import Form from "../models/FormModel.js";
+import { STATUS } from "../utils/constanta.js";
 
 export const createForm = async (req, res) => {
+  const { name, email, phoneNumber, profession, address, division, purpose } =
+    req.body;
+  const status = STATUS.NOT_COMPLETED;
   try {
+    Form.create({
+      name: name,
+      email: email,
+      phoneNumber: phoneNumber,
+      profession: profession,
+      address: address,
+      division: division,
+      purpose: purpose,
+      status: status,
+    });
     res.status(201).json({ message: "Formulir berhasil dibuat" });
   } catch (error) {
     console.error("Error membuat formulir:", error);

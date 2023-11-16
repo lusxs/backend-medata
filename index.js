@@ -7,7 +7,6 @@ import SequelizeStore from "connect-session-sequelize";
 import UserRoute from "./routes/UserRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
 import FormRoute from "./routes/FormRoute.js";
-import DivisionRoute from "./routes/DivisionRoute.js";
 import PurposeRoute from "./routes/PurposeRoute.js";
 
 dotenv.config();
@@ -47,7 +46,6 @@ app.use(express.json());
 app.use(UserRoute);
 app.use(AuthRoute);
 app.use(FormRoute);
-app.use(DivisionRoute);
 app.use(PurposeRoute);
 
 app.get("/", (req, res) => {
