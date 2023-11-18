@@ -1,7 +1,7 @@
 export const STATUS = {
-  NOT_COMPLETED: "Not Completed",
-  COMPLETED: "Completed",
-  CANCELED: "Canceled",
+  NOT_COMPLETED: "NOT COMPLETED",
+  COMPLETED: "COMPLETED",
+  CANCELED: "CANCELED",
 };
 
 export const DIVISION = {

@@ -8,6 +8,7 @@ import UserRoute from "./routes/UserRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
 import FormRoute from "./routes/FormRoute.js";
 import PurposeRoute from "./routes/PurposeRoute.js";
+import DivisionRoute from "./routes/DivisionRoute.js";
 
 dotenv.config();
 
@@ -19,9 +20,9 @@ const store = new sessionStore({
   db: database,
 });
 
-(async () => {
-  await database.sync();
-})();
+// (async () => {
+//   await database.sync();
+// })();
 
 app.use(
   session({
@@ -47,6 +48,7 @@ app.use(UserRoute);
 app.use(AuthRoute);
 app.use(FormRoute);
 app.use(PurposeRoute);
+app.use(DivisionRoute);
 
 app.get("/", (req, res) => {
   res.send("<h1>BackendEKinerja</h1>");

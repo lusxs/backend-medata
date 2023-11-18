@@ -1,5 +1,7 @@
 import { Sequelize } from "sequelize";
 import database from "../config/Database.js";
+import Division from "./DivisionModel.js";
+import Purpose from "./PurposeModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -13,7 +15,6 @@ const Form = database.define(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         isEmail: true,
       },
@@ -21,21 +22,12 @@ const Form = database.define(
     phoneNumber: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     profession: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    division: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    purpose: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -48,5 +40,11 @@ const Form = database.define(
     freezeTableName: true,
   }
 );
+
+Form.belongsTo(Division, { foreignKey: "divisionId" });
+Division.hasOne(Form, { foreignKey: "divisionId" });
+
+Form.belongsTo(Purpose, { foreignKey: "purposeId" });
+Purpose.hasOne(Form, { foreignKey: "purposeId" });
 
 export default Form;
