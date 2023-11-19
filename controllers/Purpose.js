@@ -1,5 +1,6 @@
 import Purpose from "../models/PurposeModel.js";
-import { Op } from "sequelize";
+import Division from "../models/DivisionModel.js";
+import { Model, Op } from "sequelize";
 
 export const createPurpose = async (req, res) => {
   const { name, divisionId } = req.body;
@@ -55,6 +56,12 @@ export const getPurposes = async (req, res) => {
         },
       ],
     },
+    include: [
+      {
+        model: Division,
+        attributes: ["name"],
+      },
+    ],
     offset: offset,
     limit: limit,
     order: [["id", "DESC"]],
