@@ -34,42 +34,68 @@ export const getPurposes = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search_query || "";
   const offset = limit * page;
-  const totalRows = await Purpose.count({
-    where: {
-      [Op.or]: [
+  let response;
+  let totalPage;
+  let totalRows;
+
+  const length_purposes = await Purpose.count();
+  let whereCondition = {
+    name: {
+      [Op.like]: "%" + search + "%",
+    },
+  };
+
+  if (req.division === "GENERAL") {
+    totalRows = await Purpose.count({ where: { [Op.or]: [whereCondition] } });
+    totalPage = Math.ceil(totalRows / limit);
+    response = await Purpose.findAll({
+      where: { [Op.or]: [whereCondition] },
+      offset: offset,
+      limit: limit,
+      include: [
         {
-          name: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: Division,
+          attributes: ["name"],
         },
       ],
-    },
-  });
-  const totalPage = Math.ceil(totalRows / limit);
-  const result = await Purpose.findAll({
-    where: {
-      [Op.or]: [
+      order: [["id", "DESC"]],
+    });
+  } else {
+    let divisionFilter;
+
+    if (req.division === "RESOS") {
+      divisionFilter = { divisionId: 2 };
+    } else if (req.division === "LINJAMSOS") {
+      divisionFilter = { divisionId: 3 };
+    } else {
+      divisionFilter = { divisionId: 4 };
+    }
+
+    totalRows = await Purpose.count({
+      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+    });
+
+    totalPage = Math.ceil(totalRows / limit);
+
+    response = await Purpose.findAll({
+      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      offset: offset,
+      limit: limit,
+      include: [
         {
-          name: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: Division,
+          attributes: ["name"],
         },
       ],
-    },
-    include: [
-      {
-        model: Division,
-        attributes: ["name"],
-      },
-    ],
-    offset: offset,
-    limit: limit,
-    order: [["id", "DESC"]],
-  });
+      order: [["id", "DESC"]],
+    });
+  }
+
   res.json({
-    result: result,
+    result: response,
     page: page,
     limit: limit,
+    total: length_purposes,
     totalRows: totalRows,
     totalPage: totalPage,
   });

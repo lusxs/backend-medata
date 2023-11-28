@@ -1,4 +1,6 @@
 import Form from "../models/FormModel.js";
+import Purpose from "../models/PurposeModel.js";
+import Division from "../models/DivisionModel.js";
 import { STATUS } from "../utils/constanta.js";
 import { Op } from "sequelize";
 
@@ -7,34 +9,69 @@ export const getForms = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search_query || "";
   const offset = limit * page;
-  const totalRows = await Form.count({
-    where: {
-      [Op.or]: [
+
+  let response;
+  let totalPage;
+  let totalRows;
+
+  let whereCondition = {
+    name: {
+      [Op.like]: "%" + search + "%",
+    },
+  };
+
+  if (req.division === "GENERAL") {
+    totalRows = await Form.count({ where: { [Op.or]: [whereCondition] } });
+    totalPage = Math.ceil(totalRows / limit);
+    response = await Form.findAll({
+      where: { [Op.or]: [whereCondition] },
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
+      include: [
         {
-          name: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: Purpose,
+        },
+        {
+          model: Division,
         },
       ],
-    },
-  });
-  const totalPage = Math.ceil(totalRows / limit);
-  const result = await Form.findAll({
-    where: {
-      [Op.or]: [
+    });
+  } else {
+    let divisionFilter;
+
+    if (req.division === "RESOS") {
+      divisionFilter = { divisionId: 2 };
+    } else if (req.division === "LINJAMSOS") {
+      divisionFilter = { divisionId: 3 };
+    } else {
+      divisionFilter = { divisionId: 4 };
+    }
+
+    totalRows = await Form.count({
+      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+    });
+
+    totalPage = Math.ceil(totalRows / limit);
+
+    response = await Form.findAll({
+      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      offset: offset,
+      limit: limit,
+      include: [
         {
-          name: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: Purpose,
+        },
+        {
+          model: Division,
         },
       ],
-    },
-    offset: offset,
-    limit: limit,
-    order: [["id", "DESC"]],
-  });
+      order: [["id", "DESC"]],
+    });
+  }
+
   res.json({
-    result: result,
+    result: response,
     page: page,
     limit: limit,
     totalRows: totalRows,
@@ -69,7 +106,7 @@ export const updateStatus = async (req, res) => {
   try {
     const updatedForm = await Form.update(
       { status: status },
-      { where: { id: id } }
+      { where: { uuid: id } }
     );
 
     if (updatedForm[0] === 1) {
