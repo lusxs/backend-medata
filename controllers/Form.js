@@ -7,6 +7,7 @@ import { Op } from "sequelize";
 export const getForms = async (req, res) => {
   const page = parseInt(req.query.page) || 0;
   const limit = parseInt(req.query.limit) || 10;
+  const status = req.query.status || "";
   const search = req.query.search_query || "";
   const offset = limit * page;
 
@@ -17,6 +18,9 @@ export const getForms = async (req, res) => {
   let whereCondition = {
     name: {
       [Op.like]: "%" + search + "%",
+    },
+    status: {
+      [Op.eq]: status, // Added filter for status
     },
   };
 
@@ -106,7 +110,7 @@ export const updateStatus = async (req, res) => {
   try {
     const updatedForm = await Form.update(
       { status: status },
-      { where: { uuid: id } }
+      { where: { id: id } }
     );
 
     if (updatedForm[0] === 1) {
