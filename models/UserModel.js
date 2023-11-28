@@ -22,6 +22,14 @@ const User = database.define(
         len: [3, 100],
       },
     },
+    // nip: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     notEmpty: true,
+    //     len: [3, 100],
+    //   },
+    // },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
