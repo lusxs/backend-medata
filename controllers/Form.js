@@ -123,3 +123,24 @@ export const updateStatus = async (req, res) => {
     res.status(500).json({ error: "Kesalahan server internal" });
   }
 };
+
+export const getFormById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await Form.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: Purpose,
+        },
+        {
+          model: Division,
+        },
+      ],
+    });
+    console.log(response);
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {}
+};

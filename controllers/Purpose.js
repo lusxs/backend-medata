@@ -8,6 +8,7 @@ export const createPurpose = async (req, res) => {
   try {
     await Purpose.create({
       name: name,
+      isActive: true,
       divisionId: divisionId,
     });
 
@@ -99,4 +100,59 @@ export const getPurposes = async (req, res) => {
     totalRows: totalRows,
     totalPage: totalPage,
   });
+};
+
+export const isActivePurpose = async (req, res) => {
+  const { isActive } = req.body;
+
+  try {
+    const response = await Purpose.update(
+      {
+        isActive: isActive,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updatePurpose = async (req, res) => {
+  const { name, divisionId } = req.body;
+
+  try {
+    const response = await Purpose.update(
+      {
+        name: name,
+        divisionId: divisionId,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPurposeById = async (req, res) => {
+  try {
+    const response = await Purpose.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+  }
 };

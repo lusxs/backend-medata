@@ -46,12 +46,11 @@ export const getUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const response = await User.findOne({
-      attributes: ["uuid", "roleId"],
       where: {
         uuid: req.params.id,
       },
     });
-    res.status(200).json(response);
+    res.status(200).json({ message: "Berhasil", result: response });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -103,4 +102,21 @@ export const createDivision = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+export const isActivateUser = async (req, res) => {
+  const { isActive } = req.body;
+  try {
+    const response = await User.update(
+      {
+        isActive: isActive,
+      },
+      {
+        where: {
+          uuid: req.params.id,
+        },
+      }
+    );
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {}
 };
