@@ -15,14 +15,24 @@ export const getForms = async (req, res) => {
   let totalPage;
   let totalRows;
 
-  let whereCondition = {
-    name: {
-      [Op.like]: "%" + search + "%",
-    },
-    status: {
-      [Op.eq]: status, // Added filter for status
-    },
-  };
+  let whereCondition;
+
+  if (status === "") {
+    whereCondition = {
+      name: {
+        [Op.like]: "%" + search + "%",
+      },
+    };
+  } else {
+    whereCondition = {
+      name: {
+        [Op.like]: "%" + search + "%",
+      },
+      status: {
+        [Op.eq]: status,
+      },
+    };
+  }
 
   if (req.division === "GENERAL") {
     totalRows = await Form.count({ where: { [Op.or]: [whereCondition] } });
@@ -84,13 +94,29 @@ export const getForms = async (req, res) => {
 };
 
 export const createForm = async (req, res) => {
-  const { name, email, phoneNumber, profession, address, division, purpose } =
-    req.body;
+  const {
+    name,
+    age,
+    phoneNumber,
+    citizenNumber,
+    profession,
+    address,
+    division,
+    purpose,
+  } = req.body;
+  let newCitizenNumber;
   const status = STATUS.NOT_COMPLETED;
+  if (citizenNumber === "") {
+    newCitizenNumber = null;
+  } else {
+    newCitizenNumber = citizenNumber;
+  }
+
   try {
     Form.create({
       name: name,
-      email: email,
+      age: age,
+      citizenNumber: newCitizenNumber,
       phoneNumber: phoneNumber,
       profession: profession,
       address: address,
