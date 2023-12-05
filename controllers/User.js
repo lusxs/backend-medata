@@ -57,7 +57,7 @@ export const getUserById = async (req, res) => {
 };
 
 export const createAdmin = async (req, res) => {
-  const { username, password, confirmPassword, role, email, name } = req.body;
+  const { username, password, confirmPassword, role, nip, name } = req.body;
   if (password !== confirmPassword)
     return res
       .status(400)
@@ -66,7 +66,7 @@ export const createAdmin = async (req, res) => {
   try {
     await User.create({
       username: username,
-      email: email,
+      nip: nip,
       name: name,
       password: hashPassword,
       division: DIVISION.GENERAL,
@@ -81,7 +81,7 @@ export const createAdmin = async (req, res) => {
 };
 
 export const createDivision = async (req, res) => {
-  const { username, password, confirmPassword, role, email, name } = req.body;
+  const { username, password, confirmPassword, role, nip, name } = req.body;
   if (password !== confirmPassword)
     return res
       .status(400)
@@ -90,7 +90,7 @@ export const createDivision = async (req, res) => {
   try {
     await User.create({
       username: username,
-      email: email,
+      nip: nip,
       name: name,
       password: hashPassword,
       division: DIVISION.PERLINDUNGAN_JAMINAN_SOSIAL,

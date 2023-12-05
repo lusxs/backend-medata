@@ -38,12 +38,12 @@ const User = database.define(
         len: [3, 100],
       },
     },
-    email: {
+    nip: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
-        isEmail: true,
+        isNIP: true,
       },
     },
     password: {
