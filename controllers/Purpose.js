@@ -50,7 +50,20 @@ export const getPurposes = async (req, res) => {
     totalRows = await Purpose.count({ where: { [Op.or]: [whereCondition] } });
     totalPage = Math.ceil(totalRows / limit);
     response = await Purpose.findAll({
-      where: { [Op.or]: [whereCondition] },
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
       offset: offset,
       limit: limit,
       include: [
@@ -73,13 +86,41 @@ export const getPurposes = async (req, res) => {
     }
 
     totalRows = await Purpose.count({
-      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      where: {
+        ...divisionFilter,
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
     });
 
     totalPage = Math.ceil(totalRows / limit);
 
     response = await Purpose.findAll({
-      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      where: {
+        ...divisionFilter,
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
       offset: offset,
       limit: limit,
       include: [
@@ -156,3 +197,27 @@ export const getPurposeById = async (req, res) => {
     console.log(error);
   }
 };
+
+// export const togglePurposeStatus = async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const purpose = await Purpose.findByPk(id);
+
+//     if (!purpose) {
+//       return res.status(404).json({ message: "Purpose not found" });
+//     }
+
+//     purpose.isActive = !purpose.isActive;
+
+//     await purpose.save();
+
+//     res.status(200).json({
+//       message: "Purpose status toggled successfully",
+//       result: purpose,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };

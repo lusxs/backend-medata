@@ -3,6 +3,8 @@ import Purpose from "../models/PurposeModel.js";
 import Division from "../models/DivisionModel.js";
 import { STATUS } from "../utils/constanta.js";
 import { Op } from "sequelize";
+import moment from "moment";
+import { generateReport } from "../controllers/Report.js";
 
 export const getForms = async (req, res) => {
   const page = parseInt(req.query.page) || 0;
@@ -170,3 +172,5 @@ export const getFormById = async (req, res) => {
     res.status(200).json({ message: "Berhasil", result: response });
   } catch (error) {}
 };
+
+export { generateReport } from "../controllers/Report.js";

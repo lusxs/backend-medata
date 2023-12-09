@@ -12,7 +12,17 @@ export const getUsers = async (req, res) => {
     where: {
       [Op.or]: [
         {
+          username: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
           name: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          role: {
             [Op.like]: "%" + search + "%",
           },
         },
@@ -24,7 +34,17 @@ export const getUsers = async (req, res) => {
     where: {
       [Op.or]: [
         {
+          username: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
           name: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          role: {
             [Op.like]: "%" + search + "%",
           },
         },
