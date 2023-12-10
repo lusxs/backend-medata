@@ -16,6 +16,6 @@ router.patch("/form/:id", verifyUser, updateStatus);
 router.get("/form/:id", verifyUser, getFormById);
 
 // Endpoint untuk laporan berdasarkan rentang waktu
-router.get("/reports", verifyUser, generateReport);
+router.get("/reports", generateReport);
 
 export default router;
