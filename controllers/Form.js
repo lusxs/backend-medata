@@ -173,4 +173,16 @@ export const getFormById = async (req, res) => {
   } catch (error) {}
 };
 
+export const countDataVisitorToday = async (req, res) => {
+  // const { day } = req.params;
+  try {
+    const response = await Form.count({
+      where: {
+        createdAt: day,
+      },
+    });
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {}
+};
+
 export { generateReport } from "../controllers/Report.js";
