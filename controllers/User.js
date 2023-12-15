@@ -140,3 +140,28 @@ export const isActivateUser = async (req, res) => {
     res.status(200).json({ message: "Berhasil", result: response });
   } catch (error) {}
 };
+
+// Pada UserController.js
+export const updateUser = async (req, res) => {
+  const { username, nip, name } = req.body;
+
+  try {
+    const response = await User.update(
+      {
+        username: username,
+        nip: nip,
+        name: name,
+      },
+      {
+        where: {
+          uuid: req.params.id,
+        },
+      }
+    );
+
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
