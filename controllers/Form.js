@@ -4,7 +4,6 @@ import Division from "../models/DivisionModel.js";
 import { STATUS } from "../utils/constanta.js";
 import { Op } from "sequelize";
 import moment from "moment";
-import { generateReport } from "../controllers/Report.js";
 
 export const getForms = async (req, res) => {
   const page = parseInt(req.query.page) || 0;
@@ -173,15 +172,70 @@ export const getFormById = async (req, res) => {
   } catch (error) {}
 };
 
-export const countDataVisitorToday = async (req, res) => {
-  // const { day } = req.params;
+// export const countDataVisitorToday = async (req, res) => {
+//   // const { day } = req.params;
+//   try {
+//     const response = await Form.count({
+//       where: {
+//         createdAt: day,
+//       },
+//     });
+//     res.status(200).json({ message: "Berhasil", result: response });
+//   } catch (error) {}
+// };
+
+export const countDataVisitorToday = async (date) => {
   try {
     const response = await Form.count({
       where: {
-        createdAt: day,
+        createdAt: date.toDate(),
       },
     });
-    res.status(200).json({ message: "Berhasil", result: response });
+    return response;
+  } catch (error) {
+    console.error("Error counting visitors:", error);
+    throw new Error("Kesalahan server internal");
+  }
+};
+
+function generateWeeklyData() {
+  // Mendapatkan tanggal saat ini
+  let currentDate = moment();
+
+  // Membuat array untuk menyimpan data harian selama 7 hari
+  let weeklyData = [];
+
+  // Loop untuk 7 hari terakhir
+  for (let i = 0; i < 7; i++) {
+    // Mengurangkan i hari dari tanggal saat ini
+    let currentDay = currentDate.clone().subtract(i, "days");
+
+    // Menambahkan data harian ke dalam array dalam format yang diinginkan
+    weeklyData.push({
+      date: currentDay.format("YYYY-MM-DD"),
+      formattedDate: currentDay.format("MMMM D, YYYY"),
+    });
+  }
+
+  console.log(weeklyData);
+
+  // Mengembalikan array data harian
+  return weeklyData;
+}
+
+export const generateWeeklyDataWithCounts = async (req, res) => {
+  const weeklyData = generateWeeklyData();
+
+  try {
+    // Fetch and count data for each day in the week
+    const dataWithCounts = await Promise.all(
+      weeklyData.map(async (day) => {
+        const count = await countDataVisitorToday(moment(day.date));
+        return { ...day, count };
+      })
+    );
+
+    res.status(200).json(dataWithCounts);
   } catch (error) {}
 };
 
