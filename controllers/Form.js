@@ -183,60 +183,148 @@ export const getFormById = async (req, res) => {
 //     res.status(200).json({ message: "Berhasil", result: response });
 //   } catch (error) {}
 // };
-
 export const countDataVisitorToday = async (date) => {
   try {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+
     const response = await Form.count({
       where: {
-        createdAt: date.toDate(),
+        createdAt: {
+          [Op.between]: [
+            moment(formattedDate).startOf("day").toDate(),
+            moment(formattedDate).endOf("day").toDate(),
+          ],
+        },
       },
     });
+
     return response;
   } catch (error) {
     console.error("Error counting visitors:", error);
-    throw new Error("Kesalahan server internal");
+    throw new Error("Internal server error");
   }
 };
 
 function generateWeeklyData() {
-  // Mendapatkan tanggal saat ini
-  let currentDate = moment();
+  const currentDate = moment();
+  const weeklyData = [];
 
-  // Membuat array untuk menyimpan data harian selama 7 hari
-  let weeklyData = [];
-
-  // Loop untuk 7 hari terakhir
   for (let i = 0; i < 7; i++) {
-    // Mengurangkan i hari dari tanggal saat ini
-    let currentDay = currentDate.clone().subtract(i, "days");
+    const currentDay = currentDate.clone().subtract(i, "days");
 
-    // Menambahkan data harian ke dalam array dalam format yang diinginkan
     weeklyData.push({
       date: currentDay.format("YYYY-MM-DD"),
       formattedDate: currentDay.format("MMMM D, YYYY"),
     });
   }
 
-  console.log(weeklyData);
-
-  // Mengembalikan array data harian
   return weeklyData;
 }
 
 export const generateWeeklyDataWithCounts = async (req, res) => {
-  const weeklyData = generateWeeklyData();
-
   try {
-    // Fetch and count data for each day in the week
+    const weeklyData = generateWeeklyData();
+
     const dataWithCounts = await Promise.all(
       weeklyData.map(async (day) => {
-        const count = await countDataVisitorToday(moment(day.date));
+        const count = await countDataVisitorToday(day.date);
         return { ...day, count };
       })
     );
 
     res.status(200).json(dataWithCounts);
+  } catch (error) {
+    console.error("Error generating weekly data with counts:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const countDataVisitorByDivision = async (req, res) => {
+  const { divisionId } = req.params;
+
+  try {
+    const response = await Form.count({
+      where: {
+        // createdAt: today,
+        divisionId: divisionId,
+      },
+    });
+    res.status(200).json({ message: "Berhasil", result: response });
   } catch (error) {}
 };
 
+export const countDataVisitorByStatus = async (req, res) => {
+  const { status } = req.params;
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
+
+    const response = await Form.count({
+      where: {
+        status: status,
+        createdAt: {
+          [Op.gte]: today,
+        },
+      },
+    });
+
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Gagal" });
+  }
+};
+
+export const countDataVisitorByStatusAndDivision = async (req, res) => {
+  const { status, divisionId } = req.params;
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const response = await Form.count({
+      where: {
+        divisionId: divisionId,
+        status: status,
+        createdAt: {
+          [Op.gte]: today,
+        },
+      },
+    });
+
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Gagal" });
+  }
+};
+
+export const countDataVisitorByPurpose = async (req, res) => {
+  const { purposeId } = req.params;
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
+
+    const purpose = await Form.findOne({
+      where: {
+        purposeId: purposeId,
+      },
+    });
+
+    const response = await Form.count({
+      where: {
+        createdAt: {
+          [Op.gte]: today,
+        },
+        purposeId: purposeId,
+      },
+    });
+
+    res.status(200).json({ message: "Berhasil", result: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Gagal" });
+  }
+};
+
+// export
 export { generateReport } from "../controllers/Report.js";
