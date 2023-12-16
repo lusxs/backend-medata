@@ -51,7 +51,7 @@ app.use(PurposeRoute);
 app.use(DivisionRoute);
 
 app.get("/", (req, res) => {
-  res.send("<h1>BackendMedata/h1>");
+  res.send("<h1>BackendEKinerja</h1>");
 });
 
 // store.sync();
