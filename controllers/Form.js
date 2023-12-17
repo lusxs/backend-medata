@@ -113,6 +113,7 @@ export const createForm = async (req, res) => {
     newCitizenNumber = citizenNumber;
   }
 
+  const currentDate = moment();
   try {
     Form.create({
       name: name,
@@ -124,6 +125,7 @@ export const createForm = async (req, res) => {
       divisionId: division,
       purposeId: purpose,
       status: status,
+      date: currentDate.format("YYYY-MM-DD"),
     });
     res.status(201).json({ message: "Formulir berhasil dibuat" });
   } catch (error) {
@@ -185,16 +187,9 @@ export const getFormById = async (req, res) => {
 // };
 export const countDataVisitorToday = async (date) => {
   try {
-    const formattedDate = moment(date).format("YYYY-MM-DD");
-
     const response = await Form.count({
       where: {
-        createdAt: {
-          [Op.between]: [
-            moment(formattedDate).startOf("day").toDate(),
-            moment(formattedDate).endOf("day").toDate(),
-          ],
-        },
+        date: date,
       },
     });
 
@@ -205,25 +200,30 @@ export const countDataVisitorToday = async (date) => {
   }
 };
 
-function generateWeeklyData() {
+function generateWeekdayData() {
   const currentDate = moment();
-  const weeklyData = [];
+  const weekdayData = [];
 
   for (let i = 0; i < 7; i++) {
     const currentDay = currentDate.clone().subtract(i, "days");
 
-    weeklyData.push({
-      date: currentDay.format("YYYY-MM-DD"),
-      formattedDate: currentDay.format("MMMM D, YYYY"),
-    });
+    // Check if the current day is not Saturday (6) or Sunday (0)
+    if (currentDay.day() !== 6 && currentDay.day() !== 0) {
+      weekdayData.push({
+        date: currentDay.format("YYYY-MM-DD"),
+        formattedDate: currentDay.format("MMMM D, YYYY"),
+        count: 0, // You can add other properties as needed
+      });
+    }
   }
 
-  return weeklyData;
+  console.log(weekdayData);
+  return weekdayData;
 }
 
 export const generateWeeklyDataWithCounts = async (req, res) => {
   try {
-    const weeklyData = generateWeeklyData();
+    const weeklyData = generateWeekdayData();
 
     const dataWithCounts = await Promise.all(
       weeklyData.map(async (day) => {

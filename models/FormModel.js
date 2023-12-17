@@ -57,6 +57,13 @@ const Form = database.define(
         notEmpty: true,
       },
     },
+    date: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
   },
   {
     freezeTableName: true,
