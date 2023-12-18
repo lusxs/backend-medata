@@ -33,6 +33,7 @@ export const countDataVisitorByStatus = async (req, res) => {
       Object.values(STATUS).map(async (status) => {
         const count = await Form.count({
           where: {
+            date: currentDate,
             status: status,
           },
         });
