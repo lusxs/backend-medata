@@ -2,8 +2,10 @@ import Form from "../models/FormModel.js";
 import Purpose from "../models/PurposeModel.js";
 import Division from "../models/DivisionModel.js";
 import { STATUS } from "../utils/constanta.js";
+import { generateWeekdayData } from "../utils/helper.js";
 import { Op } from "sequelize";
 import moment from "moment";
+import { generateMonthArray, getLastFiveYears } from "../utils/helper.js";
 
 export const getForms = async (req, res) => {
   const page = parseInt(req.query.page) || 0;
@@ -174,21 +176,11 @@ export const getFormById = async (req, res) => {
   } catch (error) {}
 };
 
-// export const countDataVisitorToday = async (req, res) => {
-//   // const { day } = req.params;
-//   try {
-//     const response = await Form.count({
-//       where: {
-//         createdAt: day,
-//       },
-//     });
-//     res.status(200).json({ message: "Berhasil", result: response });
-//   } catch (error) {}
-// };
-export const countDataVisitorToday = async (date) => {
+export const countDataVisitorToday = async (date, divisionId) => {
   try {
     const response = await Form.count({
       where: {
+        divisionId: divisionId,
         date: date,
       },
     });
@@ -200,34 +192,14 @@ export const countDataVisitorToday = async (date) => {
   }
 };
 
-function generateWeekdayData() {
-  const currentDate = moment();
-  const weekdayData = [];
-
-  for (let i = 0; i < 7; i++) {
-    const currentDay = currentDate.clone().subtract(i, "days");
-
-    // Check if the current day is not Saturday (6) or Sunday (0)
-    if (currentDay.day() !== 6 && currentDay.day() !== 0) {
-      weekdayData.push({
-        date: currentDay.format("YYYY-MM-DD"),
-        formattedDate: currentDay.format("MMMM D, YYYY"),
-        count: 0, // You can add other properties as needed
-      });
-    }
-  }
-
-  console.log(weekdayData);
-  return weekdayData;
-}
-
 export const generateWeeklyDataWithCounts = async (req, res) => {
+  const { divisionId } = req.params;
   try {
     const weeklyData = generateWeekdayData();
 
     const dataWithCounts = await Promise.all(
       weeklyData.map(async (day) => {
-        const count = await countDataVisitorToday(day.date);
+        const count = await countDataVisitorToday(day.date, divisionId);
         return { ...day, count };
       })
     );
@@ -245,7 +217,6 @@ export const countDataVisitorByDivision = async (req, res) => {
   try {
     const response = await Form.count({
       where: {
-        // createdAt: today,
         divisionId: divisionId,
       },
     });
@@ -253,78 +224,66 @@ export const countDataVisitorByDivision = async (req, res) => {
   } catch (error) {}
 };
 
-export const countDataVisitorByStatus = async (req, res) => {
-  const { status } = req.params;
+export const countDataVisitorByMonth = async (req, res) => {
+  const { year, divisionId } = req.params;
+
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
+    const arrayMonths = generateMonthArray(year);
+    const result = await Promise.all(
+      arrayMonths.map(async (month) => {
+        const count = await Form.count({
+          where: {
+            divisionId: divisionId,
+            date: {
+              [Op.like]: `${month}%`,
+            },
+          },
+        });
 
-    const response = await Form.count({
-      where: {
-        status: status,
-        createdAt: {
-          [Op.gte]: today,
-        },
-      },
-    });
-
-    res.status(200).json({ message: "Berhasil", result: response });
+        return count;
+      })
+    );
+    res.status(200).json({ message: "Berhasil", result: result });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Gagal" });
+    res.status(500).json({ message: "Error", error: error.message });
+  }
+};
+export const countDataVisitorByYear = async (req, res) => {
+  const { divisionId } = req.params;
+  try {
+    const arrayYears = getLastFiveYears();
+    const result = await Promise.all(
+      arrayYears.map(async (year) => {
+        const count = await Form.count({
+          where: {
+            divisionId: divisionId,
+            date: {
+              [Op.like]: `${year}%`,
+            },
+          },
+        });
+
+        return { year: year, count: count };
+      })
+    );
+    res.status(200).json({ message: "Berhasil", result: result });
+  } catch (error) {
+    res.status(500).json({ message: "Error", error: error.message });
   }
 };
 
-export const countDataVisitorByStatusAndDivision = async (req, res) => {
-  const { status, divisionId } = req.params;
+export const getYears = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const response = await Form.count({
-      where: {
-        divisionId: divisionId,
-        status: status,
-        createdAt: {
-          [Op.gte]: today,
-        },
-      },
+    const purposes = await Form.findAll({
+      attributes: ["date"],
     });
-
-    res.status(200).json({ message: "Berhasil", result: response });
+    const years = [
+      ...new Set(
+        purposes.map((purpose) => parseInt(purpose.date.substring(0, 4)))
+      ),
+    ];
+    res.status(200).json({ message: "Berhasil", result: years });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Gagal" });
+    res.status(500).json({ message: "Error", error: error.message });
   }
 };
-
-export const countDataVisitorByPurpose = async (req, res) => {
-  const { purposeId } = req.params;
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
-
-    const purpose = await Form.findOne({
-      where: {
-        purposeId: purposeId,
-      },
-    });
-
-    const response = await Form.count({
-      where: {
-        createdAt: {
-          [Op.gte]: today,
-        },
-        purposeId: purposeId,
-      },
-    });
-
-    res.status(200).json({ message: "Berhasil", result: response });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Gagal" });
-  }
-};
-
-// export
-export { generateReport } from "../controllers/Report.js";

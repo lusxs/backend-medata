@@ -4,8 +4,10 @@ import {
   getFormById,
   getForms,
   updateStatus,
-  countDataVisitorToday,
   generateWeeklyDataWithCounts,
+  countDataVisitorByMonth,
+  getYears,
+  countDataVisitorByYear,
 } from "../controllers/Form.js";
 import { verifyUser } from "../middleware/AuthUser.js";
 import { generateReport } from "../controllers/Report.js";
@@ -16,14 +18,10 @@ router.get("/forms", verifyUser, getForms);
 router.post("/form", createForm);
 router.patch("/form/:id", verifyUser, updateStatus);
 router.get("/form/:id", verifyUser, getFormById);
-router.get("/count", verifyUser, generateWeeklyDataWithCounts);
-router.get("/form/count/purpose/:purposeId", countDataVisitorToday);
-router.get("/form/count/division/:divisionId", countDataVisitorToday);
-router.get("/form/count/status/:status", countDataVisitorToday);
-router.get(
-  "/form/count/purpose/:purposeId/division/:divisionId",
-  countDataVisitorToday
-);
+router.get("/count/:divisionId", verifyUser, generateWeeklyDataWithCounts);
+router.get("/form/monthly/count/:year/:divisionId", countDataVisitorByMonth);
+router.get("/form/yearly/count/:divisionId", countDataVisitorByYear);
+router.get("/years", getYears);
 router.get("/reports", generateReport);
 
 export default router;

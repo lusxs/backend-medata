@@ -15,12 +15,12 @@ export const createDivision = async (req, res) => {
 
 export const getDivisions = async (req, res) => {
   try {
-    const data = await Division.findAll(); // Await the asynchronous operation
+    const data = await Division.findAll();
     res
       .status(200)
       .json({ message: "Berhasil Mendapatkan Data Bidang", result: data });
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
+    console.error(error);
     res
       .status(500)
       .json({ message: "Gagal Mendapatkan Data Bidang", error: error.message });
