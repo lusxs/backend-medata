@@ -10,6 +10,7 @@ import FormRoute from "./routes/FormRoute.js";
 import PurposeRoute from "./routes/PurposeRoute.js";
 import DivisionRoute from "./routes/DivisionRoute.js";
 import DashboardAdminRoute from "./routes/DashboardAdminRoute.js";
+import DashboardDivisionRoute from "./routes/DashboardDivisionRoute.js";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ app.use(FormRoute);
 app.use(PurposeRoute);
 app.use(DivisionRoute);
 app.use(DashboardAdminRoute);
+app.use(DashboardDivisionRoute);
 
 app.get("/", (req, res) => {
   res.send("<h1>BackendEKinerja</h1>");
