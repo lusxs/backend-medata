@@ -2,6 +2,7 @@ import moment from "moment";
 import Form from "../models/FormModel.js";
 import Purpose from "../models/PurposeModel.js";
 import { STATUS } from "../utils/constanta.js";
+import Division from "../models/DivisionModel.js";
 
 const currentDate = moment().format("YYYY-MM-DD");
 export const countDataVisitorByDivision = async (req, res) => {
@@ -50,7 +51,13 @@ export const countDataVisitorByStatus = async (req, res) => {
 export const countDataVisitorByPurpose = async (req, res) => {
   try {
     // Fetch all purposes
-    const purposes = await Purpose.findAll();
+    const purposes = await Purpose.findAll(
+      {
+        include: {
+          model: Division
+        }
+      }
+    );
 
     // Use Promise.all to count data for each purpose
     const result = await Promise.all(
@@ -61,7 +68,7 @@ export const countDataVisitorByPurpose = async (req, res) => {
             purposeId: purpose.id,
           },
         });
-        return { purpose: purpose.name, count: count };
+        return { purpose: purpose.name, division: purpose.division.name, count: count };
       })
     );
 

@@ -29,8 +29,22 @@ const generateReport = async (req, res) => {
       },
     };
 
+    const divisionMappings = {
+      GENERAL: undefined,
+      REHSOS: 2,
+      PFM: 3,
+      LINJAMSOS: 1,
+    };
+
+    const divisionId = divisionMappings[req.division];
+
+    const whereClause =
+      divisionId !== undefined
+        ? { ...whereCondition, divisionId }
+        : whereCondition;
+
     const reports = await Form.findAll({
-      where: whereCondition,
+      where: whereClause,
       include: [
         {
           model: Purpose,
@@ -48,7 +62,7 @@ const generateReport = async (req, res) => {
     res.status(200).json({ result: reports });
   } catch (error) {
     console.error("Error menghasilkan laporan:", error);
-    // res.status(500).json({ error: "Kesalahan server internal" });
+    res.status(500).json({ error: "Kesalahan server internal" });
   }
 };
 

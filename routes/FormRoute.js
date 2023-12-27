@@ -22,6 +22,6 @@ router.get("/count/:divisionId", verifyUser, generateWeeklyDataWithCounts);
 router.get("/form/monthly/count/:year/:divisionId", countDataVisitorByMonth);
 router.get("/form/yearly/count/:divisionId", countDataVisitorByYear);
 router.get("/years", getYears);
-router.get("/reports", generateReport);
+router.get("/reports", verifyUser, generateReport);
 
 export default router;

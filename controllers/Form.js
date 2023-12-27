@@ -8,6 +8,7 @@ import moment from "moment";
 import { generateMonthArray, getLastFiveYears } from "../utils/helper.js";
 
 export const getForms = async (req, res) => {
+  console.log(req.division);
   const page = parseInt(req.query.page) || 0;
   const limit = parseInt(req.query.limit) || 10;
   const status = req.query.status || "";
@@ -57,12 +58,12 @@ export const getForms = async (req, res) => {
   } else {
     let divisionFilter;
 
-    if (req.division === "RESOS") {
+    if (req.division === "REHSOS") {
       divisionFilter = { divisionId: 2 };
     } else if (req.division === "LINJAMSOS") {
-      divisionFilter = { divisionId: 3 };
+      divisionFilter = { divisionId: 1 };
     } else {
-      divisionFilter = { divisionId: 4 };
+      divisionFilter = { divisionId: 3 };
     }
 
     totalRows = await Form.count({
