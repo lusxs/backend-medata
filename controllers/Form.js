@@ -19,6 +19,7 @@ export const getForms = async (req, res) => {
   let totalPage;
   let totalRows;
 
+  const length_forms = await Form.count();
   let whereCondition;
 
   if (status === "") {
@@ -42,7 +43,25 @@ export const getForms = async (req, res) => {
     totalRows = await Form.count({ where: { [Op.or]: [whereCondition] } });
     totalPage = Math.ceil(totalRows / limit);
     response = await Form.findAll({
-      where: { [Op.or]: [whereCondition] },
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Purpose.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
@@ -67,21 +86,61 @@ export const getForms = async (req, res) => {
     }
 
     totalRows = await Form.count({
-      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      where: {
+        ...divisionFilter,
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Purpose.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
     });
 
     totalPage = Math.ceil(totalRows / limit);
 
     response = await Form.findAll({
-      where: { ...divisionFilter, [Op.or]: [whereCondition] },
+      where: {
+        ...divisionFilter,
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Purpose.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$Division.name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
       offset: offset,
       limit: limit,
       include: [
         {
           model: Purpose,
+          attributes: ["name"],
         },
         {
           model: Division,
+          attributes: ["name"],
         },
       ],
       order: [["id", "DESC"]],
@@ -92,6 +151,7 @@ export const getForms = async (req, res) => {
     result: response,
     page: page,
     limit: limit,
+    total: length_forms,
     totalRows: totalRows,
     totalPage: totalPage,
   });
