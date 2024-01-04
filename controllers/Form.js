@@ -8,7 +8,6 @@ import moment from "moment";
 import { generateMonthArray, getLastFiveYears } from "../utils/helper.js";
 
 export const getForms = async (req, res) => {
-  console.log(req.division);
   const page = parseInt(req.query.page) || 0;
   const limit = parseInt(req.query.limit) || 10;
   const status = req.query.status || "";
@@ -33,9 +32,7 @@ export const getForms = async (req, res) => {
       name: {
         [Op.like]: "%" + search + "%",
       },
-      status: {
-        [Op.eq]: status,
-      },
+      status: status,
     };
   }
 
@@ -44,22 +41,13 @@ export const getForms = async (req, res) => {
     totalPage = Math.ceil(totalRows / limit);
     response = await Form.findAll({
       where: {
+        ...whereCondition,
         [Op.or]: [
           {
             name: {
               [Op.like]: "%" + search + "%",
             },
           },
-          // {
-          //   "$Purpose.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
-          // {
-          //   "$Division.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
         ],
       },
       offset: offset,
@@ -75,35 +63,26 @@ export const getForms = async (req, res) => {
       ],
     });
   } else {
-    let divisionFilter;
+    let divisionId;
 
     if (req.division === "REHSOS") {
-      divisionFilter = { divisionId: 2 };
+      divisionId = 2;
     } else if (req.division === "LINJAMSOS") {
-      divisionFilter = { divisionId: 1 };
+      divisionId = 1;
     } else {
-      divisionFilter = { divisionId: 3 };
+      divisionId = 3;
     }
 
     totalRows = await Form.count({
       where: {
-        ...divisionFilter,
+        ...whereCondition,
+        divisionId: divisionId,
         [Op.or]: [
           {
             name: {
               [Op.like]: "%" + search + "%",
             },
           },
-          // {
-          //   "$Purpose.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
-          // {
-          //   "$Division.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
         ],
       },
     });
@@ -112,23 +91,14 @@ export const getForms = async (req, res) => {
 
     response = await Form.findAll({
       where: {
-        ...divisionFilter,
+        divisionId: divisionId,
+        ...whereCondition,
         [Op.or]: [
           {
             name: {
               [Op.like]: "%" + search + "%",
             },
           },
-          // {
-          //   "$Purpose.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
-          // {
-          //   "$Division.name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
         ],
       },
       offset: offset,
