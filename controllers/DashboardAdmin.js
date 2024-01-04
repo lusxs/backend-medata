@@ -51,13 +51,11 @@ export const countDataVisitorByStatus = async (req, res) => {
 export const countDataVisitorByPurpose = async (req, res) => {
   try {
     // Fetch all purposes
-    const purposes = await Purpose.findAll(
-      {
-        include: {
-          model: Division
-        }
-      }
-    );
+    const purposes = await Purpose.findAll({
+      include: {
+        model: Division,
+      },
+    });
 
     // Use Promise.all to count data for each purpose
     const result = await Promise.all(
@@ -68,7 +66,11 @@ export const countDataVisitorByPurpose = async (req, res) => {
             purposeId: purpose.id,
           },
         });
-        return { purpose: purpose.name, division: purpose.division.name, count: count };
+        return {
+          purpose: purpose.name,
+          division: purpose.division.name,
+          count: count,
+        };
       })
     );
 

@@ -50,16 +50,16 @@ export const getForms = async (req, res) => {
               [Op.like]: "%" + search + "%",
             },
           },
-          {
-            "$Purpose.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$Division.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          // {
+          //   "$Purpose.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
+          // {
+          //   "$Division.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
         ],
       },
       offset: offset,
@@ -94,16 +94,16 @@ export const getForms = async (req, res) => {
               [Op.like]: "%" + search + "%",
             },
           },
-          {
-            "$Purpose.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$Division.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          // {
+          //   "$Purpose.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
+          // {
+          //   "$Division.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
         ],
       },
     });
@@ -119,16 +119,16 @@ export const getForms = async (req, res) => {
               [Op.like]: "%" + search + "%",
             },
           },
-          {
-            "$Purpose.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$Division.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          // {
+          //   "$Purpose.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
+          // {
+          //   "$Division.name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
         ],
       },
       offset: offset,
